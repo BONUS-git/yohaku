@@ -18,4 +18,6 @@ for f in .ai/tickets/*.md; do
 done
 sh scripts/test_check_requirements.sh
 sh scripts/check_requirements.sh
+sh scripts/test_check_features.sh
+sh scripts/check_features.sh
 echo "check: ok"
