@@ -6,8 +6,16 @@ cd "$(dirname "$0")/.."
 
 test -s .ai/brief.md
 test -s LICENSE
-for f in .ai/*.md .ai/adr/*.md .ai/reviews/*.md; do
+for f in .ai/*.md .ai/adr/*.md .ai/reviews/*.md .ai/tickets/*.md; do
     [ -e "$f" ] || continue
     test -s "$f" || { echo "空の文書: $f" >&2; exit 1; }
 done
+# チケットの 1 行目は題、2 行目は状態
+for f in .ai/tickets/*.md; do
+    [ -e "$f" ] || continue
+    head -n 1 "$f" | grep -q '^# [A-Z][A-Z]*-[0-9][0-9][0-9] ' || { echo "チケットの 1 行目が題でない: $f" >&2; exit 1; }
+    sed -n 2p "$f" | grep -Eq '^状態: (open|done)$' || { echo "チケットの 2 行目が状態でない: $f" >&2; exit 1; }
+done
+sh scripts/test_check_requirements.sh
+sh scripts/check_requirements.sh
 echo "check: ok"
