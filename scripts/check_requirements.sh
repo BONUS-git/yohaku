@@ -1,5 +1,5 @@
 #!/bin/sh
-# プロダクト要求仕様書（.ai/requirements.md）の受け入れ確認（PRO-001）を確かめる。
+# プロダクト要求仕様書（.ai/requirements.md）の受け入れ確認（YOH-001）を確かめる。
 # 使い方: sh scripts/check_requirements.sh [文書のパス]（既定は .ai/requirements.md）
 # 要件は「| FR-NNN | 要求 | 区分 | 根拠 |」の表の行で書く。POSIX sh と awk だけで動く。
 set -eu
