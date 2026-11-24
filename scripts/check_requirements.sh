@@ -39,18 +39,21 @@ function count(s, re,   t) { t = s; return gsub(re, "", t) }
     if ($0 ~ /前倒し|翌営業日/) err(id " が未決定の土日祝の調整を前提にしている")
     next
 }
-sec == "未決定事項" && /^\|/ { undecided = undecided "\n" $0 }
+sec == "未決定事項" && /^\|/ {
+    split($0, c, "|"); k = trim(c[2]); v = trim(c[3])
+    # 扱いは「未決定」で始めるか、「決定。」か「入れない。」で始めて決めた先（FR・ADR・文書のパス）を指す
+    if (v ~ /^未決定/ || (v ~ /^(決定|入れない)。/ && v ~ /FR-[0-9][0-9][0-9]|ADR|`[^`]+\.md`/)) state[k] = "ok"
+    else if (!(k in state)) state[k] = "bad"
+}
 END {
     split("目的と利用者|機能要件|非機能要件|範囲外|未決定事項", need, "|")
     for (i = 1; i <= 5; i++) if (!(need[i] in seen)) { print "requirements: " doc ": 節がない: " need[i] > "/dev/stderr"; bad = 1 }
     if (nfr == 0) { print "requirements: " doc ": FR の要件がない" > "/dev/stderr"; bad = 1 }
     if (nnfr == 0) { print "requirements: " doc ": NFR の要件がない" > "/dev/stderr"; bad = 1 }
     split("支払い日が土日祝の場合の調整|技術スタック|アプリ名・ブランド|無料 / 有料の境界と料金|データ移行（機種変更時）|開発のロードマップ", item, "|")
-    m = split(undecided, rows, "\n")
     for (i = 1; i <= 6; i++) {
-        ok = 0
-        for (j = 1; j <= m; j++) if (index(rows[j], item[i]) && index(rows[j], "未決定")) ok = 1
-        if (!ok) { print "requirements: " doc ": 未決定事項に「" item[i] "」が「未決定」として書かれていない" > "/dev/stderr"; bad = 1 }
+        if (!(item[i] in state)) { print "requirements: " doc ": 未決定事項に「" item[i] "」の行がない" > "/dev/stderr"; bad = 1 }
+        else if (state[item[i]] != "ok") { print "requirements: " doc ": 未決定事項の「" item[i] "」が「未決定」でも、決めた先（FR・ADR・文書）を指す「決定。」「入れない。」でもない" > "/dev/stderr"; bad = 1 }
     }
     exit bad
 }

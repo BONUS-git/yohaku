@@ -1,7 +1,7 @@
 # 構想と要件の対応
 
 `brief.md`（構想。変えない）の節ごとに、対応する `requirements.md` の FR・NFR を示す。対応は `requirements.md` の
-「根拠」の列による。M1 に入れるかどうかは `mvp.md`。
+「根拠」の列による。M1 に入れるかどうかは `mvp.md`、段階ごとの範囲は `roadmap.md`。
 
 | `brief.md` の節 | 対応する FR | 対応する NFR | 備考 |
 |---|---|---|---|
